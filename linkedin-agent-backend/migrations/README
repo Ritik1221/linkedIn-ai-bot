@@ -1,0 +1,28 @@
+Generic single-database configuration with Alembic.
+
+This directory contains database migration scripts for the LinkedIn AI Agent.
+
+To create a new migration:
+```
+alembic revision --autogenerate -m "description of changes"
+```
+
+To upgrade to the latest version:
+```
+alembic upgrade head
+```
+
+To downgrade to a specific version:
+```
+alembic downgrade <revision>
+```
+
+To get the current version:
+```
+alembic current
+```
+
+To get migration history:
+```
+alembic history --verbose
+``` 
