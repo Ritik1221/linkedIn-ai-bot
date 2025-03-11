@@ -19,6 +19,13 @@ The LinkedIn AI Agent frontend provides an intuitive user interface for managing
   - Resume tailoring
 - **Networking**: Manage connections and messages
 - **Analytics**: Track job search and application metrics
+- **Performance Optimization**:
+  - Code splitting with dynamic imports
+  - Responsive image optimization
+  - Web vitals monitoring
+  - Skeleton loaders for better UX
+  - Font loading optimization
+  - Client-side secure storage
 
 ## Tech Stack
 
@@ -31,7 +38,7 @@ The LinkedIn AI Agent frontend provides an intuitive user interface for managing
 - **Charts**: Recharts
 - **Form Handling**: React Hook Form, Zod
 - **Testing**: Jest, React Testing Library
-- **Analytics**: PostHog
+- **Analytics**: PostHog, Web Vitals
 - **Containerization**: Docker
 
 ## Project Structure
@@ -44,6 +51,9 @@ linkedin-agent-frontend/
 │   ├── components/      # Reusable UI components
 │   ├── hooks/           # Custom React hooks
 │   ├── lib/             # Utility functions
+│   │   ├── analytics/   # Analytics and monitoring
+│   │   ├── storage/     # Secure client storage
+│   │   └── validation/  # Form validation schemas
 │   ├── services/        # API service functions
 │   ├── store/           # Redux store configuration
 │   ├── styles/          # Global styles
@@ -107,6 +117,18 @@ npm run build
 # or
 yarn build
 ```
+
+## Performance Monitoring
+
+The application includes built-in web vitals monitoring to track and report key performance metrics:
+
+- Largest Contentful Paint (LCP)
+- First Input Delay (FID)
+- Cumulative Layout Shift (CLS)
+- First Contentful Paint (FCP)
+- Time to First Byte (TTFB)
+
+These metrics are automatically collected and can be sent to your analytics platform of choice.
 
 ## Testing
 
