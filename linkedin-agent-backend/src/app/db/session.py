@@ -10,10 +10,13 @@ from sqlalchemy.orm import sessionmaker
 
 from src.app.core.config import settings
 
-# Create SQLAlchemy engine
+# Create SQLAlchemy engine with optimized connection pooling
 engine = create_engine(
     settings.SQLALCHEMY_DATABASE_URI,
+    pool_size=20,
+    max_overflow=10,
     pool_pre_ping=True,
+    pool_recycle=3600,
 )
 
 # Create session factory

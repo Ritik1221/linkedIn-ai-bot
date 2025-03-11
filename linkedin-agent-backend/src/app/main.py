@@ -3,17 +3,29 @@ Main application module for the LinkedIn AI Agent.
 """
 
 import logging
+import os
 from typing import Any
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import JSONResponse
 
 from src.app.api.v1.router import api_router
 from src.app.core.config import settings
+from src.app.utils.logging import setup_logging, get_logger
+from src.app.utils.middleware import RequestTimingMiddleware, RateLimitHeadersMiddleware
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+# Configure structured logging
+setup_logging(
+    log_level=settings.LOG_LEVEL,
+    json_format=settings.JSON_LOGS,
+    console_output=True,
+    file_output=settings.LOG_TO_FILE,
+    log_file=settings.LOG_FILE_PATH,
+)
+
+logger = get_logger(__name__)
 
 
 def create_application() -> FastAPI:
@@ -38,6 +50,19 @@ def create_application() -> FastAPI:
             allow_methods=["*"],
             allow_headers=["*"],
         )
+    
+    # Add GZip compression middleware
+    application.add_middleware(GZipMiddleware, minimum_size=1000)
+    
+    # Add request timing middleware
+    application.add_middleware(
+        RequestTimingMiddleware,
+        log_slow_responses=True,
+        slow_response_threshold=0.5,
+    )
+    
+    # Add rate limit headers middleware
+    application.add_middleware(RateLimitHeadersMiddleware)
 
     # Include API router
     application.include_router(api_router, prefix=settings.API_V1_STR)
@@ -61,7 +86,7 @@ def create_application() -> FastAPI:
         """
         Global exception handler.
         """
-        logger.error(f"Unhandled exception: {exc}", exc_info=True)
+        logger.error("unhandled_exception", exc_info=True, request_path=request.url.path)
         return JSONResponse(
             status_code=500,
             content={"detail": "Internal server error"},
@@ -76,7 +101,7 @@ app = create_application()
 @app.on_event("startup")
 async def startup_event():
     """Application startup event."""
-    logger.info(f"Starting application in {settings.ENVIRONMENT} environment")
+    logger.info("application_startup", environment=settings.ENVIRONMENT)
     # Initialize connections and resources
     
     # Create logs directory if it doesn't exist
@@ -86,7 +111,7 @@ async def startup_event():
 @app.on_event("shutdown")
 async def shutdown_event():
     """Application shutdown event."""
-    logger.info("Shutting down application")
+    logger.info("application_shutdown")
     # Clean up connections and resources
 
 if __name__ == "__main__":

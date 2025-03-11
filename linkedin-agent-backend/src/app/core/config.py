@@ -61,6 +61,18 @@ class Settings(BaseSettings):
     LINKEDIN_CLIENT_SECRET: str = ""
     LINKEDIN_REDIRECT_URI: str = "http://localhost:3000/auth/linkedin/callback"
 
+    # LLM settings
+    LLM_PROVIDER: str = "anthropic"  # anthropic or openai
+    LLM_MODEL: str = "claude-3-opus-20240229"  # claude-3-opus-20240229, gpt-4-turbo, etc.
+    ANTHROPIC_API_KEY: str = ""
+    OPENAI_API_KEY: str = ""
+    
+    # Vector database settings
+    VECTOR_DB_PROVIDER: str = "pinecone"  # pinecone, qdrant, etc.
+    PINECONE_API_KEY: str = ""
+    PINECONE_ENVIRONMENT: str = ""
+    PINECONE_INDEX_NAME: str = "linkedin-agent-index"
+
     # JWT settings
     JWT_SECRET: str = SECRET_KEY
     JWT_ALGORITHM: str = "HS256"
@@ -77,6 +89,10 @@ class Settings(BaseSettings):
     # Celery settings
     CELERY_BROKER_URL: str = "redis://localhost:6379/0"
     CELERY_RESULT_BACKEND: str = "redis://localhost:6379/0"
+
+    # Caching settings
+    REDIS_URL: str = "redis://localhost:6379/1"
+    CACHE_TTL: int = 3600  # 1 hour in seconds
 
     class Config:
         case_sensitive = True

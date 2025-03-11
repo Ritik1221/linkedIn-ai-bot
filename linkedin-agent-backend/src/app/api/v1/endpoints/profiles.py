@@ -8,9 +8,19 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from src.app.db.session import get_db
+from src.app.models.user import User
 from src.app.schemas.profile import Profile, ProfileCreate, ProfileUpdate
-# from src.app.services.profile import create_profile, get_profile, get_profiles, update_profile
-# from src.app.services.user import get_current_active_user
+from src.app.services.profile import (
+    create_profile, 
+    get_profile, 
+    get_profile_by_user_id,
+    get_profiles, 
+    update_profile,
+    analyze_profile_strength,
+    identify_skills_gap,
+    generate_improvement_recommendations
+)
+from src.app.services.user import get_current_active_user
 
 router = APIRouter()
 
@@ -20,145 +30,138 @@ async def read_profiles(
     skip: int = 0,
     limit: int = 100,
     db: Session = Depends(get_db),
-    # current_user = Depends(get_current_active_user),
+    current_user: User = Depends(get_current_active_user),
 ) -> Any:
     """
     Retrieve profiles.
     """
-    # Uncomment when profile service is implemented
-    # profiles = get_profiles(db, skip=skip, limit=limit)
-    
-    # For now, return a placeholder list of profiles
-    return [
-        {
-            "id": "00000000-0000-0000-0000-000000000000",
-            "user_id": "00000000-0000-0000-0000-000000000000",
-            "headline": "Software Engineer",
-            "summary": "Experienced software engineer with a passion for building scalable applications.",
-            "location": "San Francisco, CA",
-            "industry": "Technology",
-            "created_at": "2023-01-01T00:00:00",
-            "updated_at": "2023-01-01T00:00:00",
-        }
-    ]
+    profiles = get_profiles(db, skip=skip, limit=limit)
+    return profiles
 
 
 @router.post("/", response_model=Profile)
 async def create_user_profile(
     profile_in: ProfileCreate,
     db: Session = Depends(get_db),
-    # current_user = Depends(get_current_active_user),
+    current_user: User = Depends(get_current_active_user),
 ) -> Any:
     """
     Create new profile.
     """
-    # Uncomment when profile service is implemented
-    # profile = get_profile_by_user_id(db, user_id=current_user.id)
-    # if profile:
-    #     raise HTTPException(
-    #         status_code=status.HTTP_400_BAD_REQUEST,
-    #         detail="Profile already exists for this user",
-    #     )
-    # profile = create_profile(db, profile_in=profile_in, user_id=current_user.id)
-    
-    # For now, return a placeholder profile
-    return {
-        "id": "00000000-0000-0000-0000-000000000000",
-        "user_id": "00000000-0000-0000-0000-000000000000",
-        "headline": profile_in.headline,
-        "summary": profile_in.summary,
-        "location": profile_in.location,
-        "industry": profile_in.industry,
-        "created_at": "2023-01-01T00:00:00",
-        "updated_at": "2023-01-01T00:00:00",
-    }
+    profile = get_profile_by_user_id(db, user_id=str(current_user.id))
+    if profile:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Profile already exists for this user",
+        )
+    profile = create_profile(db, profile_in=profile_in, user_id=str(current_user.id))
+    return profile
 
 
 @router.get("/me", response_model=Profile)
 async def read_user_profile(
     db: Session = Depends(get_db),
-    # current_user = Depends(get_current_active_user),
+    current_user: User = Depends(get_current_active_user),
 ) -> Any:
     """
     Get current user profile.
     """
-    # Uncomment when profile service is implemented
-    # profile = get_profile_by_user_id(db, user_id=current_user.id)
-    # if not profile:
-    #     raise HTTPException(
-    #         status_code=status.HTTP_404_NOT_FOUND,
-    #         detail="Profile not found",
-    #     )
-    
-    # For now, return a placeholder profile
-    return {
-        "id": "00000000-0000-0000-0000-000000000000",
-        "user_id": "00000000-0000-0000-0000-000000000000",
-        "headline": "Software Engineer",
-        "summary": "Experienced software engineer with a passion for building scalable applications.",
-        "location": "San Francisco, CA",
-        "industry": "Technology",
-        "created_at": "2023-01-01T00:00:00",
-        "updated_at": "2023-01-01T00:00:00",
-    }
+    profile = get_profile_by_user_id(db, user_id=str(current_user.id))
+    if not profile:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Profile not found",
+        )
+    return profile
 
 
 @router.put("/me", response_model=Profile)
 async def update_user_profile(
     profile_in: ProfileUpdate,
     db: Session = Depends(get_db),
-    # current_user = Depends(get_current_active_user),
+    current_user: User = Depends(get_current_active_user),
 ) -> Any:
     """
     Update current user profile.
     """
-    # Uncomment when profile service is implemented
-    # profile = get_profile_by_user_id(db, user_id=current_user.id)
-    # if not profile:
-    #     raise HTTPException(
-    #         status_code=status.HTTP_404_NOT_FOUND,
-    #         detail="Profile not found",
-    #     )
-    # profile = update_profile(db, profile=profile, profile_in=profile_in)
-    
-    # For now, return a placeholder updated profile
-    return {
-        "id": "00000000-0000-0000-0000-000000000000",
-        "user_id": "00000000-0000-0000-0000-000000000000",
-        "headline": profile_in.headline or "Software Engineer",
-        "summary": profile_in.summary or "Experienced software engineer with a passion for building scalable applications.",
-        "location": profile_in.location or "San Francisco, CA",
-        "industry": profile_in.industry or "Technology",
-        "created_at": "2023-01-01T00:00:00",
-        "updated_at": "2023-01-01T00:00:00",
-    }
+    profile = get_profile_by_user_id(db, user_id=str(current_user.id))
+    if not profile:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Profile not found",
+        )
+    profile = update_profile(db, profile=profile, profile_in=profile_in)
+    return profile
+
+
+@router.get("/me/analyze", response_model=dict)
+async def analyze_user_profile(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
+) -> Any:
+    """
+    Analyze current user profile strength.
+    """
+    profile = get_profile_by_user_id(db, user_id=str(current_user.id))
+    if not profile:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Profile not found",
+        )
+    analysis = analyze_profile_strength(profile)
+    return analysis
+
+
+@router.post("/me/skills-gap", response_model=dict)
+async def analyze_skills_gap(
+    job_requirements: List[str],
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
+) -> Any:
+    """
+    Analyze skills gap between user profile and job requirements.
+    """
+    profile = get_profile_by_user_id(db, user_id=str(current_user.id))
+    if not profile:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Profile not found",
+        )
+    gap_analysis = identify_skills_gap(profile, job_requirements)
+    return gap_analysis
+
+
+@router.get("/me/recommendations", response_model=List[str])
+async def get_profile_recommendations(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
+) -> Any:
+    """
+    Get recommendations for profile improvement.
+    """
+    profile = get_profile_by_user_id(db, user_id=str(current_user.id))
+    if not profile:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Profile not found",
+        )
+    recommendations = generate_improvement_recommendations(profile)
+    return recommendations
 
 
 @router.get("/{profile_id}", response_model=Profile)
 async def read_profile(
     profile_id: str,
     db: Session = Depends(get_db),
-    # current_user = Depends(get_current_active_user),
+    current_user: User = Depends(get_current_active_user),
 ) -> Any:
     """
     Get profile by ID.
     """
-    # Uncomment when profile service is implemented
-    # profile = get_profile(db, id=profile_id)
-    # if not profile:
-    #     raise HTTPException(
-    #         status_code=status.HTTP_404_NOT_FOUND,
-    #         detail="Profile not found",
-    #     )
-    
-    # For now, return a placeholder profile
-    return {
-        "id": profile_id,
-        "user_id": "00000000-0000-0000-0000-000000000000",
-        "headline": "Software Engineer",
-        "summary": "Experienced software engineer with a passion for building scalable applications.",
-        "location": "San Francisco, CA",
-        "industry": "Technology",
-        "created_at": "2023-01-01T00:00:00",
-        "updated_at": "2023-01-01T00:00:00",
-    } 
+    profile = get_profile(db, profile_id=profile_id)
+    if not profile:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Profile not found",
+        )
+    return profile 
