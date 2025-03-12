@@ -1,0 +1,18 @@
+[Unit]
+Description=LinkedIn AI Agent Celery Worker
+After=network.target
+
+[Service]
+Type=simple
+User=celery
+Group=celery
+EnvironmentFile=/etc/linkedin-agent/celery.env
+WorkingDirectory=/opt/linkedin-agent-backend
+ExecStart=/opt/linkedin-agent-backend/venv/bin/celery -A src.worker.main worker --loglevel=INFO --concurrency=4
+ExecReload=/bin/kill -s HUP $MAINPID
+ExecStop=/bin/kill -s TERM $MAINPID
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target 

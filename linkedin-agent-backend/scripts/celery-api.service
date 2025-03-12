@@ -1,0 +1,17 @@
+[Unit]
+Description=LinkedIn AI Agent Celery API
+After=network.target celery-worker.service
+Requires=celery-worker.service
+
+[Service]
+Type=simple
+User=celery
+Group=celery
+EnvironmentFile=/etc/linkedin-agent/celery.env
+WorkingDirectory=/opt/linkedin-agent-backend
+ExecStart=/opt/linkedin-agent-backend/venv/bin/gunicorn src.worker.api:app --bind 0.0.0.0:8001 --workers 2
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target 

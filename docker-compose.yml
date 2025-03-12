@@ -12,10 +12,11 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d linkedin_agent"]
       interval: 5s
       timeout: 5s
       retries: 5
+      start_period: 10s
 
   redis:
     image: redis:7-alpine
@@ -28,13 +29,16 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+      start_period: 10s
 
   backend:
     build:
       context: ./linkedin-agent-backend
       dockerfile: Dockerfile.dev
+      target: development
     volumes:
       - ./linkedin-agent-backend:/app
+      - backend_deps:/app/.venv
     ports:
       - "8000:8000"
     depends_on:
@@ -50,17 +54,33 @@ services:
       - ENVIRONMENT=development
       - LOG_LEVEL=DEBUG
       - CORS_ORIGINS=http://localhost:3000,http://frontend:3000
+      - JWT_SECRET_KEY=dev_secret_key
+      - JWT_ALGORITHM=HS256
+      - JWT_ACCESS_TOKEN_EXPIRE_MINUTES=30
+      - LINKEDIN_CLIENT_ID=${LINKEDIN_CLIENT_ID}
+      - LINKEDIN_CLIENT_SECRET=${LINKEDIN_CLIENT_SECRET}
+      - LINKEDIN_REDIRECT_URI=http://localhost:3000/api/auth/callback/linkedin
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
 
   celery_worker:
     build:
       context: ./linkedin-agent-backend
       dockerfile: Dockerfile.dev
+      target: development
     command: celery -A src.worker.main worker --loglevel=info
     volumes:
       - ./linkedin-agent-backend:/app
+      - backend_deps:/app/.venv
     depends_on:
-      - backend
-      - redis
+      backend:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     environment:
       - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/linkedin_agent
       - REDIS_URL=redis://redis:6379/0
@@ -68,34 +88,63 @@ services:
       - CELERY_RESULT_BACKEND=redis://redis:6379/2
       - ENVIRONMENT=development
       - LOG_LEVEL=DEBUG
+      - JWT_SECRET_KEY=dev_secret_key
+    healthcheck:
+      test: ["CMD", "celery", "-A", "src.worker.main", "inspect", "ping", "-d", "celery@$HOSTNAME"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
 
   flower:
     build:
       context: ./linkedin-agent-backend
       dockerfile: Dockerfile.dev
+      target: development
     command: celery -A src.worker.main flower --port=5555
     ports:
       - "5555:5555"
     depends_on:
-      - celery_worker
+      celery_worker:
+        condition: service_healthy
     environment:
       - CELERY_BROKER_URL=redis://redis:6379/1
       - CELERY_RESULT_BACKEND=redis://redis:6379/2
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5555/healthcheck"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
 
   frontend:
     build:
       context: ./linkedin-agent-frontend
       dockerfile: Dockerfile.dev
+      target: development
     volumes:
       - ./linkedin-agent-frontend:/app
-      - /app/node_modules
+      - frontend_deps:/app/node_modules
     ports:
       - "3000:3000"
     environment:
       - NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1
+      - NEXTAUTH_URL=http://localhost:3000
+      - NEXTAUTH_SECRET=dev_nextauth_secret
+      - LINKEDIN_CLIENT_ID=${LINKEDIN_CLIENT_ID}
+      - LINKEDIN_CLIENT_SECRET=${LINKEDIN_CLIENT_SECRET}
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
 
 volumes:
   postgres_data:
-  redis_data: 
+  redis_data:
+  backend_deps:
+  frontend_deps: 

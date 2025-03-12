@@ -1,80 +1,22 @@
 # LinkedIn AI Agent
 
-An AI-powered platform for enhancing LinkedIn job search, profile optimization, and networking.
+An AI-powered job search assistant that helps you find, track, and apply for jobs on LinkedIn.
 
-## Overview
+## Project Structure
 
-LinkedIn AI Agent is a comprehensive platform that leverages artificial intelligence to help users optimize their LinkedIn profiles, find relevant job opportunities, automate job applications, and enhance networking. The platform consists of a FastAPI backend and a Next.js frontend.
+The project consists of two main components:
 
-## Components
+- `linkedin-agent-frontend`: Next.js frontend application
+- `linkedin-agent-backend`: FastAPI backend application
 
-### Backend
+## Prerequisites
 
-The backend provides a RESTful API for managing user data, LinkedIn integration, and AI-powered features. It's built with FastAPI, PostgreSQL, SQLAlchemy, and Celery.
-
-Key features:
-- User authentication with JWT and LinkedIn OAuth
-- LinkedIn profile synchronization and analysis
-- Job search and matching algorithms
-- Application tracking and automation
-- AI-powered content generation (cover letters, messages)
-- Background task processing with Celery
-
-[View Backend Documentation](linkedin-agent-backend/README.md)
-
-### Frontend
-
-The frontend provides an intuitive user interface for interacting with the LinkedIn AI Agent platform. It's built with Next.js, TypeScript, Redux, and Tailwind CSS.
-
-Key features:
-- Responsive, modern UI with dark/light mode
-- Secure authentication with NextAuth.js
-- Interactive job search and filtering
-- Application tracking dashboard
-- Profile optimization suggestions
-- Networking management
-
-[View Frontend Documentation](linkedin-agent-frontend/README.md)
-
-## Architecture
-
-```
-┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
-│                 │     │                 │     │                 │
-│  Next.js        │     │  FastAPI        │     │  Celery         │
-│  Frontend       │────▶│  Backend        │────▶│  Workers        │
-│                 │     │                 │     │                 │
-└─────────────────┘     └─────────────────┘     └─────────────────┘
-                               │                        │
-                               ▼                        ▼
-                        ┌─────────────────┐     ┌─────────────────┐
-                        │                 │     │                 │
-                        │  PostgreSQL     │     │  Redis          │
-                        │  Database       │     │  Cache/Queue    │
-                        │                 │     │                 │
-                        └─────────────────┘     └─────────────────┘
-                               │                        │
-                               └────────────┬───────────┘
-                                            ▼
-                                   ┌─────────────────┐
-                                   │                 │
-                                   │  AI Services    │
-                                   │  (LLM, Vector DB)│
-                                   │                 │
-                                   └─────────────────┘
-```
+- Docker and Docker Compose
+- Node.js 18+ (for local development)
+- Python 3.11+ (for local development)
+- LinkedIn Developer Account (for OAuth)
 
 ## Getting Started
-
-### Prerequisites
-
-- Docker and Docker Compose (for containerized setup)
-- Python 3.11+ (for backend development)
-- Node.js 18+ (for frontend development)
-- PostgreSQL
-- Redis
-
-### Quick Start with Docker
 
 1. Clone the repository:
    ```bash
@@ -82,43 +24,140 @@ Key features:
    cd linkedin-agent
    ```
 
-2. Create environment files:
+2. Copy the example environment file and update it with your values:
    ```bash
-   cp linkedin-agent-backend/.env.example linkedin-agent-backend/.env
-   cp linkedin-agent-frontend/.env.example linkedin-agent-frontend/.env
+   cp .env.example .env
    ```
 
-3. Update the environment files with your configuration.
+3. Set up LinkedIn OAuth:
+   - Go to [LinkedIn Developer Portal](https://www.linkedin.com/developers/)
+   - Create a new application
+   - Add OAuth 2.0 redirect URLs:
+     - `http://localhost:3000/api/auth/callback/linkedin` (development)
+     - Your production URL (when deploying)
+   - Copy the Client ID and Client Secret to your `.env` file
 
-4. Start the services:
+4. Start the development environment:
    ```bash
    docker-compose up -d
    ```
 
-5. Run backend migrations:
-   ```bash
-   docker-compose exec backend alembic upgrade head
-   ```
+   This will start:
+   - PostgreSQL database
+   - Redis cache
+   - Backend API (FastAPI)
+   - Celery worker
+   - Flower (Celery monitoring)
+   - Frontend (Next.js)
 
-6. Access the application:
+5. Access the applications:
    - Frontend: http://localhost:3000
-   - Backend API: http://localhost:8000/api/v1
-   - API Documentation: http://localhost:8000/api/v1/docs
+   - Backend API: http://localhost:8000
+   - API Documentation: http://localhost:8000/docs
+   - Flower Dashboard: http://localhost:5555
 
-### Local Development
+## Development
 
-For detailed instructions on setting up local development environments, see:
-- [Backend Setup](linkedin-agent-backend/README.md#setup)
-- [Frontend Setup](linkedin-agent-frontend/README.md#setup)
+### Frontend Development
 
-## Features
+The frontend is built with:
+- Next.js 14 (App Router)
+- TypeScript
+- Tailwind CSS
+- NextAuth.js for authentication
+- Axios for API communication
 
-- **Profile Optimization**: AI-powered analysis and suggestions for LinkedIn profiles
-- **Job Matching**: Intelligent job recommendations based on skills and experience
-- **Application Automation**: Streamlined job application process with AI-generated content
-- **Networking Enhancement**: Smart connection suggestions and message templates
-- **Analytics Dashboard**: Track job search progress and application success rates
+To run the frontend locally:
+```bash
+cd linkedin-agent-frontend
+npm install
+npm run dev
+```
+
+### Backend Development
+
+The backend is built with:
+- FastAPI
+- PostgreSQL
+- Redis
+- Celery
+- SQLAlchemy
+
+To run the backend locally:
+```bash
+cd linkedin-agent-backend
+python -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+uvicorn src.main:app --reload
+```
+
+## Environment Variables
+
+### Required Variables
+
+Frontend:
+- `NEXT_PUBLIC_API_URL`: Backend API URL
+- `NEXTAUTH_URL`: Frontend URL
+- `NEXTAUTH_SECRET`: Random string for session encryption
+- `LINKEDIN_CLIENT_ID`: LinkedIn OAuth Client ID
+- `LINKEDIN_CLIENT_SECRET`: LinkedIn OAuth Client Secret
+
+Backend:
+- `DATABASE_URL`: PostgreSQL connection string
+- `REDIS_URL`: Redis connection string
+- `JWT_SECRET_KEY`: Secret key for JWT tokens
+- `LINKEDIN_CLIENT_ID`: LinkedIn OAuth Client ID
+- `LINKEDIN_CLIENT_SECRET`: LinkedIn OAuth Client Secret
+
+## Docker Development
+
+The development environment uses Docker Compose with the following features:
+- Hot reloading for both frontend and backend
+- Volume mounting for local development
+- Health checks for all services
+- Automatic dependency installation
+- Development-specific configurations
+
+### Useful Commands
+
+```bash
+# Start all services
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Rebuild services
+docker-compose up -d --build
+
+# Stop all services
+docker-compose down
+
+# Stop and remove volumes
+docker-compose down -v
+```
+
+## Testing
+
+```bash
+# Frontend tests
+cd linkedin-agent-frontend
+npm test
+
+# Backend tests
+cd linkedin-agent-backend
+pytest
+```
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a Pull Request
 
 ## License
 
-[MIT License](LICENSE) 
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details. 

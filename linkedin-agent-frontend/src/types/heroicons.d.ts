@@ -1,0 +1,83 @@
+declare module '@heroicons/react/outline' {
+  import { ComponentType, SVGProps } from 'react';
+  
+  export const BriefcaseIcon: ComponentType<SVGProps<SVGSVGElement>>;
+  export const ChatBubbleLeftRightIcon: ComponentType<SVGProps<SVGSVGElement>>;
+  export const ChartBarIcon: ComponentType<SVGProps<SVGSVGElement>>;
+  export const HomeIcon: ComponentType<SVGProps<SVGSVGElement>>;
+  export const UserIcon: ComponentType<SVGProps<SVGSVGElement>>;
+  export const BellIcon: ComponentType<SVGProps<SVGSVGElement>>;
+  export const EnvelopeIcon: ComponentType<SVGProps<SVGSVGElement>>;
+  export const Bars3Icon: ComponentType<SVGProps<SVGSVGElement>>;
+  export const XMarkIcon: ComponentType<SVGProps<SVGSVGElement>>;
+  export const MagnifyingGlassIcon: ComponentType<SVGProps<SVGSVGElement>>;
+  export const UserGroupIcon: ComponentType<SVGProps<SVGSVGElement>>;
+  export const ArrowTrendingUpIcon: ComponentType<SVGProps<SVGSVGElement>>;
+  export const ClockIcon: ComponentType<SVGProps<SVGSVGElement>>;
+  export const DocumentCheckIcon: ComponentType<SVGProps<SVGSVGElement>>;
+  export const BookOpenIcon: ComponentType<SVGProps<SVGSVGElement>>;
+  export const MapPinIcon: ComponentType<SVGProps<SVGSVGElement>>;
+  export const AdjustmentsHorizontalIcon: ComponentType<SVGProps<SVGSVGElement>>;
+  export const BookmarkIcon: ComponentType<SVGProps<SVGSVGElement>>;
+  export const PencilIcon: ComponentType<SVGProps<SVGSVGElement>>;
+  export const AcademicCapIcon: ComponentType<SVGProps<SVGSVGElement>>;
+  export const CodeBracketIcon: ComponentType<SVGProps<SVGSVGElement>>;
+  export const BuildingOfficeIcon: ComponentType<SVGProps<SVGSVGElement>>;
+  export const DocumentTextIcon: ComponentType<SVGProps<SVGSVGElement>>;
+  export const PaperClipIcon: ComponentType<SVGProps<SVGSVGElement>>;
+  export const PhotoIcon: ComponentType<SVGProps<SVGSVGElement>>;
+  export const UserPlusIcon: ComponentType<SVGProps<SVGSVGElement>>;
+  export const CakeIcon: ComponentType<SVGProps<SVGSVGElement>>;
+  export const ArrowPathIcon: ComponentType<SVGProps<SVGSVGElement>>;
+  export const PaperAirplaneIcon: ComponentType<SVGProps<SVGSVGElement>>;
+  export const ChevronRightIcon: ComponentType<SVGProps<SVGSVGElement>>;
+  export const CheckCircleIcon: ComponentType<SVGProps<SVGSVGElement>>;
+  export const XCircleIcon: ComponentType<SVGProps<SVGSVGElement>>;
+  export const PhoneIcon: ComponentType<SVGProps<SVGSVGElement>>;
+  export const VideoCameraIcon: ComponentType<SVGProps<SVGSVGElement>>;
+  export const PlusIcon: ComponentType<SVGProps<SVGSVGElement>>;
+  export const CalendarIcon: ComponentType<SVGProps<SVGSVGElement>>;
+  export const DocumentDuplicateIcon: ComponentType<SVGProps<SVGSVGElement>>;
+}
+
+declare module '@heroicons/react/solid' {
+  import { ComponentType, SVGProps } from 'react';
+  
+  export const BriefcaseIcon: ComponentType<SVGProps<SVGSVGElement>>;
+  export const ChatBubbleLeftRightIcon: ComponentType<SVGProps<SVGSVGElement>>;
+  export const ChartBarIcon: ComponentType<SVGProps<SVGSVGElement>>;
+  export const HomeIcon: ComponentType<SVGProps<SVGSVGElement>>;
+  export const UserIcon: ComponentType<SVGProps<SVGSVGElement>>;
+  export const BellIcon: ComponentType<SVGProps<SVGSVGElement>>;
+  export const EnvelopeIcon: ComponentType<SVGProps<SVGSVGElement>>;
+  export const Bars3Icon: ComponentType<SVGProps<SVGSVGElement>>;
+  export const XMarkIcon: ComponentType<SVGProps<SVGSVGElement>>;
+  export const MagnifyingGlassIcon: ComponentType<SVGProps<SVGSVGElement>>;
+  export const UserGroupIcon: ComponentType<SVGProps<SVGSVGElement>>;
+  export const ArrowTrendingUpIcon: ComponentType<SVGProps<SVGSVGElement>>;
+  export const ClockIcon: ComponentType<SVGProps<SVGSVGElement>>;
+  export const DocumentCheckIcon: ComponentType<SVGProps<SVGSVGElement>>;
+  export const BookOpenIcon: ComponentType<SVGProps<SVGSVGElement>>;
+  export const MapPinIcon: ComponentType<SVGProps<SVGSVGElement>>;
+  export const AdjustmentsHorizontalIcon: ComponentType<SVGProps<SVGSVGElement>>;
+  export const BookmarkIcon: ComponentType<SVGProps<SVGSVGElement>>;
+  export const PencilIcon: ComponentType<SVGProps<SVGSVGElement>>;
+  export const AcademicCapIcon: ComponentType<SVGProps<SVGSVGElement>>;
+  export const CodeBracketIcon: ComponentType<SVGProps<SVGSVGElement>>;
+  export const BuildingOfficeIcon: ComponentType<SVGProps<SVGSVGElement>>;
+  export const DocumentTextIcon: ComponentType<SVGProps<SVGSVGElement>>;
+  export const PaperClipIcon: ComponentType<SVGProps<SVGSVGElement>>;
+  export const PhotoIcon: ComponentType<SVGProps<SVGSVGElement>>;
+  export const UserPlusIcon: ComponentType<SVGProps<SVGSVGElement>>;
+  export const CakeIcon: ComponentType<SVGProps<SVGSVGElement>>;
+  export const ArrowPathIcon: ComponentType<SVGProps<SVGSVGElement>>;
+  export const PaperAirplaneIcon: ComponentType<SVGProps<SVGSVGElement>>;
+  export const ChevronRightIcon: ComponentType<SVGProps<SVGSVGElement>>;
+  export const CheckCircleIcon: ComponentType<SVGProps<SVGSVGElement>>;
+  export const XCircleIcon: ComponentType<SVGProps<SVGSVGElement>>;
+  export const PhoneIcon: ComponentType<SVGProps<SVGSVGElement>>;
+  export const VideoCameraIcon: ComponentType<SVGProps<SVGSVGElement>>;
+  export const PlusIcon: ComponentType<SVGProps<SVGSVGElement>>;
+  export const CalendarIcon: ComponentType<SVGProps<SVGSVGElement>>;
+  export const DocumentDuplicateIcon: ComponentType<SVGProps<SVGSVGElement>>;
+} 
